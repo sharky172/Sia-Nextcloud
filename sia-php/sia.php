@@ -30,7 +30,7 @@ class Client {
 		$res=curl_exec($ch);
 		$status_code=curl_getinfo ($ch, CURLINFO_HTTP_CODE );
 		if ( $status_code < 200 || $status_code > 299 || curl_errno($ch)) {
-			throw new \Exception("curl erro: ".curl_errno($ch));
+			throw new \Exception("curl error: ".curl_errno($ch));
 		}
 		curl_close($ch);
 
