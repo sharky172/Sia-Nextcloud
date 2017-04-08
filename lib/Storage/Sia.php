@@ -45,6 +45,7 @@ class Sia extends \OC\Files\Storage\Common {
 		if (!empty($arguments['apiauth']) && !is_string($arguments['apiauth'])) {
 			throw new \InvalidArgumentException('wrong password format for Sia');
 		}
+		
 		$this->client = new \Sia\Client($arguments['apiaddr'],$arguments['apiauth']);
 		$this->apiaddr = $arguments['apiaddr'];
 		$this->apiauth = $arguments['apiauth'];

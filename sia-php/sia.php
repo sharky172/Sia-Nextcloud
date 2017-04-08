@@ -15,7 +15,7 @@ class Client {
 
 	private function apiCurl($route, $method) {
 		$url=$this->apiaddr . $route;
-		$passwd= $this->apiauth;
+		$passwd=$this->apiauth;
 
         $ch=curl_init("$url");
         curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
@@ -30,7 +30,7 @@ class Client {
 		$res=curl_exec($ch);
 		$status_code=curl_getinfo ($ch, CURLINFO_HTTP_CODE );
 		if ( $status_code < 200 || $status_code > 299 || curl_errno($ch)) {
-			throw new \Exception("error curl:".curl_errno($ch));
+			throw new \Exception("curl erro: ".curl_errno($ch));
 		}
 		curl_close($ch);
 
