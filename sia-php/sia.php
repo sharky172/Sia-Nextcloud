@@ -9,39 +9,53 @@
 
 namespace Sia;
 
-require_once __DIR__ . '/Requests/library/Requests.php';
-\Requests::register_autoloader();
-
 class Client {
 	private $apiaddr;
+	private $apiauth;
+
+	private function apiCurl($route, $method) {
+		$url=$this->apiaddr . $route;
+		$passwd= $this->apiauth;
+
+        $ch=curl_init("$url");
+        curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
+        curl_setopt($ch,CURLOPT_USERAGENT,'Sia-Agent');
+
+		if (!empty($passwd) && $passwd)
+			curl_setopt($ch, CURLOPT_USERPWD, ":$passwd");
+
+		if ($method == 'POST')
+			curl_setopt($ch, CURLOPT_POST, 1);
+
+		$res=curl_exec($ch);
+		$status_code=curl_getinfo ($ch, CURLINFO_HTTP_CODE );
+		if ( $status_code < 200 || $status_code > 299 || curl_errno($ch)) {
+			throw new \Exception("error curl:".curl_errno($ch));
+		}
+		curl_close($ch);
+
+		return $res;
+       }
 
 	private function apiGet($route) {
-		$url = $this->apiaddr . $route;
-		$res = \Requests::get($url, array('User-Agent' => 'Sia-Agent'));
-
-		if ( $res->status_code < 200 || $res->status_code > 299 || !$res->success ) {
-			throw new \Exception(json_decode($res->body)->message);
-		}
-
-		return json_decode($res->body);
+		$res=$this->apiCurl($route, 'GET');
+		return json_decode($res);
 	}
 
 	private function apiPost($route) {
-		$url = $this->apiaddr . $route;
-		$res = \Requests::post($url, array('User-Agent' => 'Sia-Agent'));
-
-		if ( $res->status_code < 200 || $res->status_code > 299 || !$res->success ) {
-			throw new \Exception(json_decode($res->body)->message);
-		}
-
-		return json_decode($res->body);
+		$res=$this->apiCurl($route, 'POST');
+		return json_decode($res);
 	}
 
-	public function __construct($apiaddr) {
+	public function __construct($apiaddr,$apiauth) {
 		if (!is_string($apiaddr)) {
 			throw new \InvalidArgumentException('api addr must be a string');
 		}
+		if (!empty($apiauth) && !is_string($apiauth)) {
+			throw new \InvalidArgumentException('password wrong format');
+		}
 		$this->apiaddr = 'http://' . $apiaddr;
+		$this->apiauth= $apiauth;
 	}	
 
 	// Daemon API
