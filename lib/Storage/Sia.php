@@ -34,14 +34,21 @@ use Icewind\Streams\CallbackWrapper;
 class Sia extends \OC\Files\Storage\Common {
 	private $client;
 	private $apiaddr;
+	private $apiauth;
 
 
 	public function __construct($arguments) {
 		if (!isset($arguments['apiaddr']) || !is_string($arguments['apiaddr'])) {
 			throw new \InvalidArgumentException('no api address set for Sia');
 		}
-		$this->client = new \Sia\Client($arguments['apiaddr']);
+		
+		if (!empty($arguments['apiauth']) && !is_string($arguments['apiauth'])) {
+			throw new \InvalidArgumentException('wrong password format for Sia');
+		}
+		
+		$this->client = new \Sia\Client($arguments['apiaddr'],$arguments['apiauth']);
 		$this->apiaddr = $arguments['apiaddr'];
+		$this->apiauth = $arguments['apiauth'];
 	}
 
 	// parsePaths takes an array of siafiles and a path and returns an array of
