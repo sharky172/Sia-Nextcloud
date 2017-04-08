@@ -38,7 +38,9 @@ class Sia extends Backend {
 			->setText($l->t('Sia'))
 			->addParameters([
 				(new DefinitionParameter('apiaddr', $l->t('API Address'))),
-				(new DefinitionParameter('apiauth', $l->t('API Password'))),
+				(new DefinitionParameter('apiauth', $l->t('API Password')))
+				 ->setFlag(DefinitionParameter::FLAG_OPTIONAL),
+
 			])
 			->setAllowedVisibility(BackendService::VISIBILITY_ADMIN)
 			->setPriority(BackendService::PRIORITY_DEFAULT + 50)
